@@ -1,7 +1,7 @@
 #include <NewPing.h>
 
-#define FRONT_TRIG_PIN A1
-#define FRONT_ECHO_PIN A4
+#define FRONT_TRIG_PIN A4
+#define FRONT_ECHO_PIN A1
 /* #define LEFT_TRIG_PIN A0
 #define LEFT_ECHO_PIN A3
 #define RIGHT_TRIG_PIN A2
@@ -14,7 +14,7 @@
 #define MOTOR_ENA 10
 #define MOTOR_ENB 11
 
-const int OBJECT_DETECTION_THRESHOLD = 10; // cm
+const int OBJECT_DETECTION_THRESHOLD = 10; // cm, adjust as needed
 
 NewPing front_sonar(FRONT_TRIG_PIN, FRONT_ECHO_PIN, OBJECT_DETECTION_THRESHOLD);
 
@@ -43,15 +43,15 @@ void loop() {
 }
 
 void moveForward() {
-  digitalWrite(MOTOR_IN1, HIGH);
-  digitalWrite(MOTOR_IN2, LOW);
-  digitalWrite(MOTOR_IN3, HIGH);
-  digitalWrite(MOTOR_IN4, LOW);
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, HIGH);
+  digitalWrite(MOTOR_IN3, LOW);
+  digitalWrite(MOTOR_IN4, HIGH);
 }
 
-void turnLeft() {
-  digitalWrite(MOTOR_IN1, HIGH);
-  digitalWrite(MOTOR_IN2, LOW);
+void turnRight() {
+  digitalWrite(MOTOR_IN1, LOW);
+  digitalWrite(MOTOR_IN2, HIGH);
   digitalWrite(MOTOR_IN3, LOW);
   digitalWrite(MOTOR_IN4, LOW);
 }
