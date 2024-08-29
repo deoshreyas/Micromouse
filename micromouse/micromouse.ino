@@ -14,19 +14,18 @@
 #define MOTOR_ENA 10
 #define MOTOR_ENB 11
 
-const int FRONT_WALL_DETECTION_THRESHOLD = 1; // cm, detects walls 
-const int SIDE_WALL_DETECTION_THRESHOLD = 5; // cm, detects left and right wall for straight movement
+const int FRONT_WALL_DETECTION_THRESHOLD = 13; // cm, detects walls 
+const int SIDE_WALL_DETECTION_THRESHOLD = 7; // cm, detects left and right wall for straight movement
 
-int turn_right_chance = 20; // initially, start with a 20% chance of turning right at intersection (decreases by 1% every time right turned)
- 
 NewPing front_sonar(FRONT_TRIG_PIN, FRONT_ECHO_PIN, FRONT_WALL_DETECTION_THRESHOLD);
 NewPing left_sonar(LEFT_TRIG_PIN, LEFT_ECHO_PIN, SIDE_WALL_DETECTION_THRESHOLD);
 NewPing right_sonar(RIGHT_TRIG_PIN, RIGHT_ECHO_PIN, SIDE_WALL_DETECTION_THRESHOLD);
 
 void setup() {
   // Initialize motors
-  analogWrite(MOTOR_ENA, 255); // Full speed
-  analogWrite(MOTOR_ENB, 255); // Full speed
+  analogWrite(MOTOR_ENA, 150); // Less speed while moving
+  analogWrite(MOTOR_ENB, 150); // Less speed while moving
+  // TODO: Increase speed while turning
 
   stop();
 }
@@ -37,24 +36,29 @@ void loop() {
   int right_dst = right_sonar.ping_cm();
   if (front_dst==0) { // Front is clear
     moveForward();
-  } else if (left_dst==0 && right_dst==0) {
-    int rand_val = random(1, 100); 
-    bool should_turn_right = rand_val <=  turn_right_chance;
-    if (should_turn_right) {
-      turnRight();
-      moveForward();
-    }
-  }
+    delay(100);
   } else if (left_dst==0) { // Left is clear
     turnLeft();
+    delay(250);
     moveForward();
   } else if (right_dst==0) { // Right is clear
     turnRight();
+    delay(250);
     moveForward();
   } else { // Turn left in case no other option is there
     turnLeft();
+    delay(250);
+    moveForward();
   }
   delay(100);
+  // Move away if too close to walls 
+  if (left_dst==1) {
+    turnRight();
+    delay(50);
+  } else if (right_dst==1) {
+    turnLeft();
+    delay(50);
+  }
 }
 
 void moveForward() {
@@ -64,17 +68,25 @@ void moveForward() {
   digitalWrite(MOTOR_IN4, HIGH);
 }
 
+/* NOTE: While turning, I am reversing the direction of the wheel on the 
+side being turned to. I believe this will aid in faster and more 
+efficient turns. */
+
 void turnLeft() {
-  digitalWrite(MOTOR_IN1, LOW);
+  analogWrite(MOTOR_ENA, 255);
+  analogWrite(MOTOR_ENB, 255); 
+  digitalWrite(MOTOR_IN1, HIGH);
   digitalWrite(MOTOR_IN2, LOW);
   digitalWrite(MOTOR_IN3, LOW);
   digitalWrite(MOTOR_IN4, HIGH);
 }
 
 void turnRight() {
+  analogWrite(MOTOR_ENA, 255);
+  analogWrite(MOTOR_ENB, 255); 
   digitalWrite(MOTOR_IN1, LOW);
   digitalWrite(MOTOR_IN2, HIGH);
-  digitalWrite(MOTOR_IN3, LOW);
+  digitalWrite(MOTOR_IN3, HIGH);
   digitalWrite(MOTOR_IN4, LOW);
 }
 
